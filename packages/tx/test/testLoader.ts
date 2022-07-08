@@ -52,7 +52,7 @@ export async function getTests(
       const testsByName = JSON.parse(content)
       const testNames = Object.keys(testsByName)
       for (const testName of testNames) {
-        if (!skipPredicate(testName, testsByName[testName])) {
+        if (skipPredicate(testName, testsByName[testName]) === false) {
           await onFile(parsedFileName, subDir, testName, testsByName[testName])
         }
       }

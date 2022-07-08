@@ -359,7 +359,7 @@ export abstract class BaseTransaction<TransactionObject> {
    */
   protected _getCommon(common?: Common, chainId?: BigIntLike) {
     // Chain ID provided
-    if (chainId) {
+    if (typeof chainId !== 'undefined') {
       const chainIdBigInt = bufferToBigInt(toBuffer(chainId))
       if (common) {
         if (common.chainId() !== chainIdBigInt) {

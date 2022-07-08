@@ -42,7 +42,7 @@ const EIPs: any = {
 }
 
 tape('TransactionTests', async (t) => {
-  const fileFilterRegex = file ? new RegExp(file + '[^\\w]') : undefined
+  const fileFilterRegex = typeof file !== 'undefined' ? new RegExp(file + '[^\\w]') : undefined
   await getTests(
     (
       _filename: string,
@@ -56,14 +56,14 @@ tape('TransactionTests', async (t) => {
             continue
           }
           const forkTestData = testData.result[forkName]
-          const shouldBeInvalid = !!forkTestData.exception
+          const shouldBeInvalid = typeof forkTestData.exception !== 'undefined'
 
           try {
             const rawTx = toBuffer(testData.txbytes)
             const hardfork = forkNameMap[forkName]
             const common = new Common({ chain: 1, hardfork })
             const activateEIPs = EIPs[forkName]
-            if (activateEIPs) {
+            if (typeof activateEIPs !== undefined) {
               common.setEIPs(activateEIPs)
             }
             const tx = TransactionFactory.fromSerializedData(rawTx, { common })
@@ -73,7 +73,7 @@ tape('TransactionTests', async (t) => {
             const senderIsCorrect = forkTestData.sender === sender
             const hashIsCorrect = forkTestData.hash?.slice(2) === hash
 
-            const hashAndSenderAreCorrect = forkTestData && senderIsCorrect && hashIsCorrect
+            const hashAndSenderAreCorrect = senderIsCorrect && hashIsCorrect
             if (shouldBeInvalid) {
               st.assert(!txIsValid, `Transaction should be invalid on ${forkName}`)
             } else {
