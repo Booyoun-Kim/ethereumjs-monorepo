@@ -16,7 +16,10 @@ function normalizeTxParams(_txParams: any) {
   txParams.value = numberToHex(txParams.value)
 
   // strict byte length checking
-  txParams.to = txParams.to ? setLengthLeft(toBuffer(txParams.to), 20) : null
+  txParams.to =
+    txParams.to !== null && typeof txParams.to !== 'undefined'
+      ? setLengthLeft(toBuffer(txParams.to), 20)
+      : null
 
   // v as raw signature value {0,1}
   // v is the recovery bit and can be either {0,1} or {27,28}.
@@ -38,7 +41,7 @@ export default function blockFromRpc(blockParams: any, uncles: any[] = [], optio
   const header = blockHeaderFromRpc(blockParams, options)
 
   const transactions: TypedTransaction[] = []
-  if (blockParams.transactions) {
+  if (typeof blockParams.transactions !== 'undefined') {
     const opts = { common: header._common }
     for (const _txParams of blockParams.transactions) {
       const txParams = normalizeTxParams(_txParams)

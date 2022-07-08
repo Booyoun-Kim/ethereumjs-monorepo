@@ -36,7 +36,7 @@ export default function blockHeaderFromRpc(blockParams: any, options?: BlockOpti
       coinbase: miner,
       stateRoot,
       transactionsTrie: transactionsRoot,
-      receiptTrie: receiptRoot || receiptsRoot,
+      receiptTrie: receiptRoot ?? receiptsRoot,
       logsBloom,
       difficulty: numberToHex(difficulty),
       number,

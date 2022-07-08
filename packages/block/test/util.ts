@@ -30,7 +30,9 @@ function createBlock(
 
   const londonHfBlock = common.hardforkBlock(Hardfork.London)
   const baseFeePerGas =
-    londonHfBlock && number > londonHfBlock ? parentBlock.header.calcNextBaseFee() : undefined
+    londonHfBlock !== null && number > londonHfBlock
+      ? parentBlock.header.calcNextBaseFee()
+      : undefined
 
   return Block.fromBlockData(
     {

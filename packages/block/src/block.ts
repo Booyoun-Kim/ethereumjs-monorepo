@@ -98,7 +98,7 @@ export class Block {
 
     // parse transactions
     const transactions = []
-    for (const txData of txsData || []) {
+    for (const txData of txsData ?? []) {
       transactions.push(
         TransactionFactory.fromBlockBodyData(txData, {
           ...opts,
@@ -118,10 +118,10 @@ export class Block {
       // Disable this option here (all other options carried over), since this overwrites the provided Difficulty to an incorrect value
       calcDifficultyFromHeader: undefined,
     }
-    if (uncleOpts.hardforkByTD) {
+    if (typeof uncleOpts.hardforkByTD !== 'undefined') {
       delete uncleOpts.hardforkByBlockNumber
     }
-    for (const uncleHeaderData of uhsData || []) {
+    for (const uncleHeaderData of uhsData ?? []) {
       uncleHeaders.push(BlockHeader.fromValuesArray(uncleHeaderData, uncleOpts))
     }
 
@@ -241,7 +241,7 @@ export class Block {
     const errors: string[] = []
     this.transactions.forEach((tx, i) => {
       const errs = <string[]>tx.validate(true)
-      if (this._common.isActivatedEIP(1559)) {
+      if (this._common.isActivatedEIP(1559) === true) {
         if (tx.supports(Capability.EIP1559FeeMarket)) {
           tx = tx as FeeMarketEIP1559Transaction
           if (tx.maxFeePerGas < this.header.baseFeePerGas!) {
