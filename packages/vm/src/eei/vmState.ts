@@ -49,7 +49,7 @@ export class VmState implements EVMStateAccess {
     this._accessedStorageReverted = [new Map()]
 
     // Safeguard if "process" is not available (browser)
-    if (process !== undefined && process.env.DEBUG) {
+    if (typeof process?.env.DEBUG !== 'undefined') {
       this.DEBUG = true
     }
     this._debug = createDebugLogger('vm:state')
@@ -216,7 +216,7 @@ export class VmState implements EVMStateAccess {
   ) {
     const mapTarget = storageList[storageList.length - 1]
 
-    if (mapTarget) {
+    if (typeof mapTarget !== 'undefined') {
       // Note: storageMap is always defined here per definition (TypeScript cannot infer this)
       storageMap?.forEach((slotSet: Set<string>, addressString: string) => {
         const addressExists = mapTarget.get(addressString)
@@ -256,10 +256,10 @@ export class VmState implements EVMStateAccess {
         const [balance, code, storage] = state
         const account = Account.fromAccountData({ balance })
         await this.putAccount(addr, account)
-        if (code) {
+        if (typeof code !== 'undefined') {
           await this.putContractCode(addr, toBuffer(code))
         }
-        if (storage) {
+        if (typeof storage !== 'undefined') {
           for (const [key, value] of storage) {
             await this.putContractStorage(addr, toBuffer(key), toBuffer(value))
           }
@@ -274,7 +274,7 @@ export class VmState implements EVMStateAccess {
    * as defined in EIP-161 (https://eips.ethereum.org/EIPS/eip-161).
    */
   async cleanupTouchedAccounts(): Promise<void> {
-    if (this._common.gteHardfork('spuriousDragon')) {
+    if (this._common.gteHardfork(Hardfork.SpuriousDragon) === true) {
       const touchedArray = Array.from(this._touched)
       for (const addressHex of touchedArray) {
         const address = new Address(Buffer.from(addressHex, 'hex'))

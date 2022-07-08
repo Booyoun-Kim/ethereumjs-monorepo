@@ -242,7 +242,7 @@ const testLegacy: any = {
 export function getTestDirs(network: string, testType: string) {
   const testDirs = [testType]
   for (const key in testLegacy) {
-    if (key.toLowerCase() == network.toLowerCase() && testLegacy[key]) {
+    if (key.toLowerCase() === network.toLowerCase() && typeof testLegacy[key] !== 'undefined') {
       // Tests for HFs before Istanbul have been moved under `LegacyTests/Constantinople`:
       // https://github.com/ethereum/tests/releases/tag/v7.0.0-beta.1
       testDirs.push('LegacyTests/Constantinople/' + testType)
@@ -280,7 +280,7 @@ export function getCommon(targetNetwork: string) {
     for (const hf of hardforks) {
       // check if we enable this hf
       // disable dao hf by default (if enabled at block 0 forces the first 10 blocks to have dao-hard-fork in extraData of block header)
-      if (mainnetCommon.gteHardfork(hf.name) && hf.name != 'dao') {
+      if (mainnetCommon.gteHardfork(hf.name) === true && hf.name != 'dao') {
         // this hardfork should be activated at block 0
         testHardforks.push({
           name: hf.name,
@@ -312,9 +312,9 @@ export function getCommon(targetNetwork: string) {
   } else {
     // this is not a "default fork" network, but it is a "transition" network. we will test the VM if it transitions the right way
     const transitionForks =
-      transitionNetworks[network] ||
+      transitionNetworks[network] ??
       transitionNetworks[network.substring(0, 1).toUpperCase() + network.substr(1)]
-    if (!transitionForks) {
+    if (typeof transitionForks === 'undefined') {
       throw new Error('network not supported: ' + network)
     }
     const mainnetCommon = new Common({
@@ -324,13 +324,13 @@ export function getCommon(targetNetwork: string) {
     const hardforks = mainnetCommon.hardforks()
     const testHardforks = []
     for (const hf of hardforks) {
-      if (mainnetCommon.gteHardfork(hf.name)) {
+      if (mainnetCommon.gteHardfork(hf.name) === true) {
         // this hardfork should be activated at block 0
         const forkBlockNumber = transitionForks[hf.name]
         testHardforks.push({
           name: hf.name,
           // forkHash: hf.forkHash,
-          block: forkBlockNumber === null ? null : forkBlockNumber || 0, // if forkBlockNumber is defined as null, disable it, otherwise use block number or 0 (if its undefined)
+          block: typeof forkBlockNumber !== 'undefined' ? forkBlockNumber : 0, // if forkBlockNumber is defined as null, disable it, otherwise use block number or 0 (if its undefined)
         })
       } else {
         // disable the hardfork

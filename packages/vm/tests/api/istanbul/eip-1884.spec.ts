@@ -26,7 +26,8 @@ tape('Istanbul: EIP-1884', async (t) => {
       const common = new Common({ chain, hardfork })
       const vm = await VM.create({ common })
 
-      const balance = testCase.selfbalance ? BigInt(testCase.selfbalance) : undefined
+      const balance =
+        typeof testCase.selfbalance !== 'undefined' ? BigInt(testCase.selfbalance) : undefined
       const account = createAccount(BigInt(0), balance)
 
       await vm.stateManager.putAccount(addr, account)

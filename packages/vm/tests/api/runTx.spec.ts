@@ -168,9 +168,10 @@ tape('runTx() -> successful API parameter usage', async (t) => {
               ? tx.maxPriorityFeePerGas
               : tx.maxFeePerGas - baseFee
             : tx.gasPrice - baseFee
-        const expectedCoinbaseBalance = common.isActivatedEIP(1559)
-          ? result.totalGasSpent * inclusionFeePerGas
-          : result.amountSpent
+        const expectedCoinbaseBalance =
+          common.isActivatedEIP(1559) === true
+            ? result.totalGasSpent * inclusionFeePerGas
+            : result.amountSpent
 
         t.equals(
           coinbaseAccount.balance,
@@ -660,7 +661,7 @@ tape('runTx() -> skipBalance behavior', async (t) => {
   const sender = Address.fromPrivateKey(senderKey)
 
   for (const balance of [undefined, BigInt(5)]) {
-    if (balance) {
+    if (typeof balance !== 'undefined') {
       await vm.stateManager.modifyAccountFields(sender, { nonce: BigInt(0), balance })
     }
     const tx = Transaction.fromTxData({

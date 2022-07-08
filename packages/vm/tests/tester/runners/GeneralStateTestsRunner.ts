@@ -13,7 +13,7 @@ function parseTestCases(
 ) {
   let testCases = []
 
-  if (testData['post'][forkConfigTestSuite]) {
+  if (typeof testData['post'][forkConfigTestSuite] !== 'undefined') {
     testCases = testData['post'][forkConfigTestSuite].map((testCase: any) => {
       const testIndexes = testCase['indexes']
       const tx = { ...testData.transaction }
@@ -33,7 +33,7 @@ function parseTestCases(
       tx.gasLimit = testData.transaction.gasLimit[testIndexes['gas']]
       tx.value = testData.transaction.value[testIndexes['value']]
 
-      if (tx.accessLists) {
+      if (typeof tx.accessLists !== 'undefined') {
         tx.accessList = testData.transaction.accessLists[testIndexes['data']]
         if (tx.chainId == undefined) {
           tx.chainId = 1
@@ -60,7 +60,7 @@ function parseTestCases(
 
 async function runTestCase(options: any, testData: any, t: tape.Test) {
   let VM
-  if (options.dist) {
+  if (options.dist === true) {
     VM = require('../../../dist').default
   } else {
     VM = require('../../../src').default
@@ -86,7 +86,7 @@ async function runTestCase(options: any, testData: any, t: tape.Test) {
     if (tx.validate()) {
       const block = makeBlockFromEnv(testData.env, { common })
 
-      if (options.jsontrace) {
+      if (options.jsontrace === true) {
         vm.evm.on('step', function (e: InterpreterStep) {
           let hexStack = []
           hexStack = e.stack.map((item: bigint) => {
@@ -148,7 +148,7 @@ export default async function runStateTest(options: any, testData: any, t: tape.
       return
     }
     for (const testCase of testCases) {
-      if (options.reps) {
+      if (typeof options.reps !== 'undefined') {
         let totalTimeSpent = 0
         for (let x = 0; x < options.reps; x++) {
           totalTimeSpent += await runTestCase(options, testCase, t)

@@ -17,7 +17,7 @@ const falsePredicate = () => false
 export async function getTests(
   onFile: Function,
   fileFilter: RegExp | string[] = /.json$/,
-  skipPredicate: Function = falsePredicate,
+  skipPredicate: (...args: any[]) => boolean = falsePredicate,
   directory: string,
   excludeDir: RegExp | string[] = []
 ): Promise<string[]> {
@@ -134,16 +134,16 @@ export async function getTestsFromArgs(testType: string, onFile: Function, args:
       return skipTest(name, args.skipVM)
     }
   }
-  if (args.singleSource) {
+  if (typeof args.singleSource !== 'undefined') {
     return getTestFromSource(args.singleSource, onFile)
   }
-  if (args.file) {
+  if (typeof args.file !== 'undefined') {
     fileFilter = new RegExp(args.file)
   }
-  if (args.excludeDir) {
+  if (typeof args.excludeDir !== 'undefined') {
     excludeDir = new RegExp(args.excludeDir)
   }
-  if (args.test) {
+  if (typeof args.test !== 'undefined') {
     skipFn = (testName: string) => {
       return testName !== args.test
     }

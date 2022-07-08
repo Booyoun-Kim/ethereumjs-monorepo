@@ -169,24 +169,33 @@ function MSTORE(position: Buffer, value: Buffer) {
  */
 function getAuthCallCode(data: AuthcallData) {
   const ZEROS32 = zeros(32)
-  const gasLimitBuffer = setLengthLeft(data.gasLimit ? bigIntToBuffer(data.gasLimit) : ZEROS32, 32)
+  const gasLimitBuffer = setLengthLeft(
+    typeof data.gasLimit !== 'undefined' ? bigIntToBuffer(data.gasLimit) : ZEROS32,
+    32
+  )
   const addressBuffer = setLengthLeft(data.address.buf, 32)
-  const valueBuffer = setLengthLeft(data.value ? bigIntToBuffer(data.value) : ZEROS32, 32)
-  const valueExtBuffer = setLengthLeft(data.valueExt ? bigIntToBuffer(data.valueExt) : ZEROS32, 32)
+  const valueBuffer = setLengthLeft(
+    typeof data.value !== 'undefined' ? bigIntToBuffer(data.value) : ZEROS32,
+    32
+  )
+  const valueExtBuffer = setLengthLeft(
+    typeof data.valueExt !== 'undefined' ? bigIntToBuffer(data.valueExt) : ZEROS32,
+    32
+  )
   const argsOffsetBuffer = setLengthLeft(
-    data.argsOffset ? bigIntToBuffer(data.argsOffset) : ZEROS32,
+    typeof data.argsOffset !== 'undefined' ? bigIntToBuffer(data.argsOffset) : ZEROS32,
     32
   )
   const argsLengthBuffer = setLengthLeft(
-    data.argsLength ? bigIntToBuffer(data.argsLength) : ZEROS32,
+    typeof data.argsLength !== 'undefined' ? bigIntToBuffer(data.argsLength) : ZEROS32,
     32
   )
   const retOffsetBuffer = setLengthLeft(
-    data.retOffset ? bigIntToBuffer(data.retOffset) : ZEROS32,
+    typeof data.retOffset !== 'undefined' ? bigIntToBuffer(data.retOffset) : ZEROS32,
     32
   )
   const retLengthBuffer = setLengthLeft(
-    data.retLength ? bigIntToBuffer(data.retLength) : ZEROS32,
+    typeof data.retLength !== 'undefined' ? bigIntToBuffer(data.retLength) : ZEROS32,
     32
   )
   const PUSH32 = Buffer.from('7f', 'hex')
