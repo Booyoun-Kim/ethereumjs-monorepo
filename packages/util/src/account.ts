@@ -35,10 +35,10 @@ export class Account {
     const { nonce, balance, stateRoot, codeHash } = accountData
 
     return new Account(
-      nonce ? bufferToBigInt(toBuffer(nonce)) : undefined,
-      balance ? bufferToBigInt(toBuffer(balance)) : undefined,
-      stateRoot ? toBuffer(stateRoot) : undefined,
-      codeHash ? toBuffer(codeHash) : undefined
+      typeof nonce !== 'undefined' ? bufferToBigInt(toBuffer(nonce)) : undefined,
+      typeof balance !== 'undefined' ? bufferToBigInt(toBuffer(balance)) : undefined,
+      typeof stateRoot !== 'undefined' ? toBuffer(stateRoot) : undefined,
+      typeof codeHash !== 'undefined' ? toBuffer(codeHash) : undefined
     )
   }
 
@@ -155,7 +155,7 @@ export const toChecksumAddress = function (
   const address = stripHexPrefix(hexAddress).toLowerCase()
 
   let prefix = ''
-  if (eip1191ChainId) {
+  if (typeof eip1191ChainId !== 'undefined') {
     const chainId = bufferToBigInt(toBuffer(eip1191ChainId))
     prefix = chainId.toString() + '0x'
   }
