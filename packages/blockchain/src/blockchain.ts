@@ -334,7 +334,7 @@ export class Blockchain implements BlockchainInterface {
     return await this.runWithLock<Block>(async () => {
       // if the head is not found return the headHeader
       const hash = this._heads[name] ?? this._headBlockHash
-      if (!hash) throw new Error('No head found.')
+      if (typeof hash === 'undefined') throw new Error('No head found.')
       const block = await this._getBlock(hash)
       return block
     })
@@ -549,7 +549,7 @@ export class Blockchain implements BlockchainInterface {
       return
     }
     const parentHeader = (await this.getBlock(header.parentHash)).header
-    if (!parentHeader) {
+    if (typeof parentHeader === 'undefined') {
       throw new Error(`could not find parent header ${header.errorStr()}`)
     }
 
@@ -574,7 +574,7 @@ export class Blockchain implements BlockchainInterface {
 
     header.validateGasLimit(parentHeader)
 
-    if (height) {
+    if (typeof height !== 'undefined') {
       const dif = height - parentHeader.number
 
       if (!(dif < BigInt(8) && dif > BigInt(1))) {
@@ -585,7 +585,7 @@ export class Blockchain implements BlockchainInterface {
     }
 
     // check blockchain dependent EIP1559 values
-    if (this._common.isActivatedEIP(1559)) {
+    if (this._common.isActivatedEIP(1559) === true) {
       // check if the base fee is correct
       let expectedBaseFee
       const londonHfBlock = this._common.hardforkBlock(Hardfork.London)
@@ -655,7 +655,7 @@ export class Blockchain implements BlockchainInterface {
     let parentHash = block.header.parentHash
     for (let i = 0; i < getBlocks; i++) {
       const parentBlock = await this.getBlock(parentHash)
-      if (!parentBlock) {
+      if (typeof parentBlock === 'undefined') {
         throw new Error(`could not find parent block ${block.errorStr()}`)
       }
       canonicalBlockMap.push(parentBlock)
@@ -843,7 +843,7 @@ export class Blockchain implements BlockchainInterface {
     // check if block is in the canonical chain
     const canonicalHash = await this.safeNumberToHash(blockNumber)
 
-    const inCanonical = !!canonicalHash && canonicalHash.equals(blockHash)
+    const inCanonical = canonicalHash !== false && canonicalHash.equals(blockHash)
 
     // delete the block, and if block is in the canonical chain, delete all
     // children as well
@@ -888,11 +888,11 @@ export class Blockchain implements BlockchainInterface {
       return
     }
 
-    if (this._headHeaderHash?.equals(blockHash)) {
+    if (this._headHeaderHash?.equals(blockHash) === true) {
       this._headHeaderHash = headHash
     }
 
-    if (this._headBlockHash?.equals(blockHash)) {
+    if (this._headBlockHash?.equals(blockHash) === true) {
       this._headBlockHash = headHash
     }
 
@@ -927,7 +927,7 @@ export class Blockchain implements BlockchainInterface {
     return await this.runWithLock<number>(async (): Promise<number> => {
       const headHash = this._heads[name] ?? this.genesisBlock.hash()
 
-      if (maxBlocks && maxBlocks < 0) {
+      if (typeof maxBlocks !== 'undefined' && maxBlocks < 0) {
         throw 'If maxBlocks is provided, it has to be a non-negative number'
       }
 
@@ -1031,7 +1031,7 @@ export class Blockchain implements BlockchainInterface {
     let hash: Buffer | false
 
     hash = await this.safeNumberToHash(blockNumber)
-    while (hash) {
+    while (hash !== false) {
       ops.push(DBOp.del(DBTarget.NumberToHash, { blockNumber }))
 
       // reset stale iterator heads to current canonical head this can, for
@@ -1047,7 +1047,7 @@ export class Blockchain implements BlockchainInterface {
       }
 
       // reset stale headBlock to current canonical
-      if (this._headBlockHash?.equals(hash)) {
+      if (this._headBlockHash?.equals(hash) === true) {
         this._headBlockHash = headHash
       }
 
@@ -1085,7 +1085,7 @@ export class Blockchain implements BlockchainInterface {
     const loopCondition = async () => {
       staleHash = await this.safeNumberToHash(currentNumber)
       currentCanonicalHash = header.hash()
-      return !staleHash || !currentCanonicalHash.equals(staleHash)
+      return staleHash === false || !currentCanonicalHash.equals(staleHash)
     }
 
     while (await loopCondition()) {
@@ -1109,7 +1109,7 @@ export class Blockchain implements BlockchainInterface {
         }
       }
       // flag stale headBlock for reset
-      if (staleHash && this._headBlockHash?.equals(staleHash)) {
+      if (staleHash && this._headBlockHash?.equals(staleHash) === true) {
         staleHeadBlock = true
       }
 
@@ -1165,7 +1165,7 @@ export class Blockchain implements BlockchainInterface {
    * @hidden
    */
   private async _getHeader(hash: Buffer, number?: bigint) {
-    if (!number) {
+    if (typeof number === 'undefined') {
       number = await this.dbManager.hashToNumber(hash)
     }
     return this.dbManager.getHeader(hash, number)

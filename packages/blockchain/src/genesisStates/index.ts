@@ -26,14 +26,14 @@ export async function genesisStateRoot(genesisState: GenesisState) {
     if (typeof value === 'string') {
       account.balance = BigInt(value)
     } else {
-      const [balance, code, storage] = value as AccountState
-      if (balance) {
+      const [balance, code, storage] = value as Partial<AccountState>
+      if (typeof balance !== 'undefined') {
         account.balance = BigInt(balance)
       }
-      if (code) {
+      if (typeof code !== 'undefined') {
         account.codeHash = Buffer.from(keccak256(toBuffer(code)))
       }
-      if (storage) {
+      if (typeof storage !== 'undefined') {
         const storageTrie = new Trie()
         for (const [k, val] of storage) {
           const storageKey = isHexPrefixed(k) ? toBuffer(k) : Buffer.from(k, 'hex')

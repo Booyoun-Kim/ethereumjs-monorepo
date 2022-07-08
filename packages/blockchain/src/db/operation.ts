@@ -128,7 +128,10 @@ export class DBOp {
   }
 
   public updateCache(cacheMap: CacheMap) {
-    if (this.cacheString && cacheMap[this.cacheString]) {
+    if (
+      typeof this.cacheString !== 'undefined' &&
+      typeof cacheMap[this.cacheString] !== 'undefined'
+    ) {
       if (this.baseDBOp.type == 'put') {
         Buffer.isBuffer(this.baseDBOp.value) &&
           cacheMap[this.cacheString].set(this.baseDBOp.key, this.baseDBOp.value)

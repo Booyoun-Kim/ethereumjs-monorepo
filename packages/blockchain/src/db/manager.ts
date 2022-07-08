@@ -12,7 +12,8 @@ class NotFoundError extends Error {
   constructor(blockNumber: bigint) {
     super(`Key ${blockNumber.toString()} was not found`)
 
-    if (Error.captureStackTrace) {
+    // `Error.captureStackTrace` is not defined in some browser contexts
+    if (typeof Error.captureStackTrace !== 'undefined') {
       Error.captureStackTrace(this, this.constructor)
     }
   }
@@ -181,8 +182,8 @@ export class DBManager {
     const dbKey = dbGetOperation.baseDBOp.key
     const dbOpts = dbGetOperation.baseDBOp
 
-    if (cacheString) {
-      if (!this._cache[cacheString]) {
+    if (typeof cacheString !== 'undefined') {
+      if (typeof this._cache[cacheString] === 'undefined') {
         throw new Error(`Invalid cache: ${cacheString}`)
       }
 
